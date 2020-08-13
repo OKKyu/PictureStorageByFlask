@@ -5,4 +5,7 @@
 *.key
 *.csr
 *.whl
-venv.*
+PictureStorage/venv/
+TODO
+csrinfo-PS
+sslerror
