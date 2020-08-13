@@ -1,0 +1,8 @@
+*.db
+*.pyc
+*.log
+*.crt
+*.key
+*.csr
+*.whl
+venv.*
