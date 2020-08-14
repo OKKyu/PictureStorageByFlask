@@ -5,6 +5,8 @@
 *.key
 *.csr
 *.whl
+PictureStorage/data/
+PictureStorage/log/
 PictureStorage/venv/
 TODO
 csrinfo-PS

@@ -7,9 +7,10 @@ import copy
 import re
 import unittest
 import requests
+import lxml.html
 
 #Test Setting
-DOMAIN_STR = 'https://moloheyer:5002'
+DOMAIN_STR = 'https://live221:5002'
 CORRECT_FILE_PATH = {'jpg':'test_img.jpg' , 'png':'test_img.png', 'gif':'test_img.gif', 'jpeg':'test_img.jpeg', 'bmp':'test_img.bmp' }
 OUTPUT_PATH = '../data'
 
@@ -159,6 +160,42 @@ class Test_pic_post_form(unittest.TestCase):
         self.assertEqual(type(response.json()) is dict, True)
         self.assertEqual('Filename is not inputed' in response.json().get('result'), True)
         self.assertEqual(len(glob.glob(OUTPUT_PATH + os.sep + '*')), 0)
+        
+    def testcase5(self):
+        '''
+            Test of other http method. if method is not post, to refusing requests. It is correct.
+        '''
+        
+        #prepared processing.
+        shutil.rmtree(OUTPUT_PATH)
+        os.mkdir(OUTPUT_PATH)
+        
+        #get method
+        response = requests.get(DOMAIN_STR + '/pic_post_form', files=self.files.get('jpg'))
+        root = lxml.html.fromstring(response.text)
+        self.assertEqual(root.cssselect('title')[0].text_content(), '405 Method Not Allowed')
+        self.assertEqual(response.status_code, 405)
+        
+        #head method
+        response = requests.head(DOMAIN_STR + '/pic_post_form', files=self.files.get('jpg'))
+        self.assertEqual(response.status_code, 405)
+        
+    def testcase6(self):
+        '''
+            Don't get file from data directory to client.
+        '''
+        
+        #prepared processing.
+        #before test, putting one file into data directory.
+        shutil.rmtree(OUTPUT_PATH)
+        os.mkdir(OUTPUT_PATH)
+        requests.post(DOMAIN_STR + '/pic_post_form', files=self.files.get('jpg'))
+        
+        #test get
+        response = requests.get(DOMAIN_STR + '/data/' + CORRECT_FILE_PATH.get('jpg'))
+        root = lxml.html.fromstring(response.text)
+        self.assertEqual(root.cssselect('title')[0].text_content(), '404 Not Found')
+        self.assertEqual(response.status_code, 404)
         
 if __name__ == '__main__':
     unittest.main()
