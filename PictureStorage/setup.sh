@@ -18,12 +18,9 @@ python3 -m venv venv
 source ./venv/bin/activate
 pip install -U pip
 
-echo "Please input '0' if you want to use only webapp."
-echo "If you want to use test script, please input other char."
-read choose
-if [ "$choose" == "0" ]; then
- pip install -r requirements.txt
-else
+if [ "$1" == "t" ]; then
  pip install -r requirements2.txt
+else
+ pip install -r requirements1.txt
 fi
 deactivate
